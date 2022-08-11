@@ -40,10 +40,8 @@ public class Movement : MonoBehaviour
             transform.position = Vector2.MoveTowards(pos, mousePos, speed * Time.deltaTime);
             _pointList.Add(transform.position);
         }
-
-        var direction = mousePos - pos;
-
-        //Debug.DrawLine(pos, pos + direction.normalized * -1, Color.red);
+        
+       
     }
     
     

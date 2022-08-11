@@ -7,9 +7,6 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/Assets/Deneme.cs" root0="FORCE_HIGHLIGHTING" />
-  </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
@@ -71,6 +68,7 @@
       <workItem from="1659967861878" duration="1140000" />
       <workItem from="1660026699692" duration="18038000" />
       <workItem from="1660113117333" duration="25541000" />
+      <workItem from="1660200140533" duration="21333000" />
     </task>
     <servers />
   </component>

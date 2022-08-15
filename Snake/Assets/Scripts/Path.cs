@@ -21,7 +21,7 @@ public class Path : MonoBehaviour
     private Vector2 _bottomCorner;
     private Vector2 _topCorner;
     private float _boundryMinX, _boundrymaxX, _boundryminY, _boundrymaxY;
-    
+
     void Start()
     {
         ScreenBoundry();
@@ -31,6 +31,7 @@ public class Path : MonoBehaviour
     {
         Movement();
         PathCreator();
+        SnakeBodyMovement();
         Feed();
     }
 
@@ -44,10 +45,9 @@ public class Path : MonoBehaviour
         if (distance <= snakeHeadScale + baitScale)
         {
             ChangeBaitTransform();
-            //GameObject body = Instantiate(bodyPrefab,path[path.Count -_snakeBody.Count - 1],Quaternion.identity);
-            //_snakeBody.Add(body.transform);
+            GameObject body = Instantiate(bodyPrefab, path[_snakeBody.Count + 2], Quaternion.identity);
+            _snakeBody.Add(body.transform);
         }
-            
         
     }
     
@@ -61,80 +61,95 @@ public class Path : MonoBehaviour
     
     private void PathCreator()
     {   
-        path.Clear();
-        mousePath.Reverse();
+        
         for (int i = 0; i < mousePath.Count - 1; i++)
         {
             Debug.DrawLine(mousePath[i], mousePath[i + 1], Color.blue, 100);
         }
         
+        path.Clear();
         path.Add(mousePath[0]);
-        
-        int index = 0;
         float difference = 0;
         Vector2 point = path.Last();
         
-        while (index < mousePath.Count - 1)
+        for (int i = 0; i < mousePath.Count - 1; i++)
         {
-            var differenceBetweenPoints = Vector2.Distance(mousePath[index], mousePath[index + 1]);
-            Vector2 direction = mousePath[index + 1] - mousePath[index];
+            var differenceBetweenPoints = Vector2.Distance(mousePath[i], mousePath[i + 1]);
+            Vector2 direction = mousePath[i + 1] - mousePath[i];
             var newPoint = point + direction.normalized * (gap - difference);
-            var distance = Vector2.Distance(newPoint, mousePath[index]);
+            var distance = Vector2.Distance(newPoint, mousePath[i]);
             
             while (distance != 0 && distance <= differenceBetweenPoints)
             {
                 difference = 0;
-                path.Insert(0,newPoint);
-                newPoint = path.First() + direction.normalized * gap;
-                distance = Vector2.Distance(newPoint,mousePath[index]);
-                point = path.First();
+                path.Add(newPoint);
+                //path.Insert(0,newPoint);
+                newPoint = path.Last() + direction.normalized * gap;
+                distance = Vector2.Distance(newPoint,mousePath[i]);
+                point = path.Last();
             }
 
             if (differenceBetweenPoints < distance)
             {   
                 
-                if(index + 2 == mousePath.Count)
-                    path.Insert(0,mousePath.First());
+                if(i + 2 == mousePath.Count)
+                    path.Add(mousePath.Last());
                 
-                difference += Vector2.Distance(mousePath[index + 1],point);
-                point = mousePath[index + 1];
+                difference += Vector2.Distance(mousePath[i + 1],point);
+                point = mousePath[i + 1];
             }
             
-            index++;
         }
-        mousePath.Reverse();
     }
     
     private void Movement()
     {
         var pos = (Vector2)transform.position;
         var mousePos = (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
+        
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            GameObject body = Instantiate(bodyPrefab, path[_snakeBody.Count + 1], Quaternion.identity);
+            _snakeBody.Add(body.transform);
+        }
+        
         if (pos != mousePos)
         {
 
             if (pos.x < _boundryMinX - transform.localScale.x / 2 || _boundrymaxX + transform.localScale.x / 2 < pos.x)
+            {
                 pos.x = pos.x * -1;
+                mousePath.Clear();
+                _snakeBody.Clear();
+            }
 
-            if (pos.y < _boundryminY - transform.localScale.x / 2 || _boundrymaxY + transform.localScale.x / 2< pos.y)
+
+            if (pos.y < _boundryminY - transform.localScale.x / 2 || _boundrymaxY + transform.localScale.x / 2 < pos.y)
+            {
                 pos.y = pos.y * -1;
+                mousePath.Clear();
+                _snakeBody.Clear();
+            }
+                
             
             transform.position = Vector2.MoveTowards(pos, mousePos, speed * Time.deltaTime);
-            mousePath.Add(transform.position);
+            mousePath.Insert(0, transform.position);
             
-            /*
-            for (int i = 0; i < _snakeBody.Count; i++)
-                _snakeBody[i].position = path[path.Count - i - 1];
-            */
         }
         
-       
     }
-    
+
+    private void SnakeBodyMovement()
+    {
+        
+        for (int i = 0; i < _snakeBody.Count; i++)
+            _snakeBody[i].position = (Vector2)path[i + 1];
+    }
+
     private void ScreenBoundry()
     {
         _bottomCorner = Camera.main.ViewportToWorldPoint(new Vector2(0, 0));
-        _topCorner = Camera.main.ViewportToWorldPoint(new Vector3(1, 1));
+        _topCorner = Camera.main.ViewportToWorldPoint(new Vector2(1, 1));
 
         _boundryMinX = _bottomCorner.x;
         _boundrymaxX = _topCorner.x;

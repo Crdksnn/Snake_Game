@@ -14,6 +14,6 @@ public class SnakeBody : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.position = _path[_path.Count - index];
+        transform.position = _path[index];
     }
 }

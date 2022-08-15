@@ -28,7 +28,7 @@
 }</component>
   <component name="RunManager" selected="Attach to Unity Editor.Attach to Unity Editor">
     <configuration name="UnitTests (batch mode)" type="RunUnityExe" factoryName="Unity Executable">
-      <option name="EXE_PATH" value="C:\Program Files\Unity 2021.3.4f1\Editor\Unity.exe" />
+      <option name="EXE_PATH" value="C:\Program Files\Unity\Hub\Editor\2021.3.4f1\Editor\Unity.exe" />
       <option name="PROGRAM_PARAMETERS" value="-runTests -batchmode -projectPath C:\Users\DalakGames\Desktop\Snake-Game\Snake -testResults Logs/results.xml -testPlatform EditMode -debugCodeOptimization" />
       <option name="WORKING_DIRECTORY" value="C:\Users\DalakGames\Desktop\Snake-Game\Snake" />
       <option name="PASS_PARENT_ENVS" value="1" />
@@ -69,6 +69,9 @@
       <workItem from="1660026699692" duration="18038000" />
       <workItem from="1660113117333" duration="25541000" />
       <workItem from="1660200140533" duration="21333000" />
+      <workItem from="1660235442196" duration="8000" />
+      <workItem from="1660235576302" duration="626000" />
+      <workItem from="1660376213268" duration="6839000" />
     </task>
     <servers />
   </component>

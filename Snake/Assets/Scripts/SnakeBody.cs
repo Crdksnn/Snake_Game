@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Deneme : MonoBehaviour
+public class SnakeBody : MonoBehaviour
 {
     private List<Vector2> _path;
     [SerializeField] private int index;

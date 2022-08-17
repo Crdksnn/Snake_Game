@@ -5,11 +5,18 @@ using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
+[Serializable]
+public struct Node
+{
+    public Vector3 position;
+    public bool jump;
+}
+
 public class Path : MonoBehaviour
 {
     
     public List<Vector2> path = new List<Vector2>();
-    [SerializeField] List<Vector2> mousePath = new List<Vector2>();
+    [SerializeField] List<Node> mousePath = new List<Node>();
     [SerializeField] private float gap;
     
     [SerializeField] private float speed;
@@ -53,39 +60,43 @@ public class Path : MonoBehaviour
     
     private void ChangeBaitTransform()
     {
-        // var x = condition ? var1 : var2 ;
         float newX = Random.Range(_boundryMinX, _boundrymaxX);
         float newY = Random.Range(_boundryminY, _boundrymaxY);
         bait.position = new Vector2(newX, newY);
     }
     
     private void PathCreator()
-    {   
-        
+    {
         for (int i = 0; i < mousePath.Count - 1; i++)
         {
-            Debug.DrawLine(mousePath[i], mousePath[i + 1], Color.blue, 100);
+            Debug.DrawLine(mousePath[i].position, mousePath[i + 1].position, Color.blue, 100);
         }
         
         path.Clear();
-        path.Add(mousePath[0]);
+        path.Add(mousePath[0].position);
         float difference = 0;
         Vector2 point = path.Last();
         
         for (int i = 0; i < mousePath.Count - 1; i++)
         {
-            var differenceBetweenPoints = Vector2.Distance(mousePath[i], mousePath[i + 1]);
-            Vector2 direction = mousePath[i + 1] - mousePath[i];
+            if (mousePath[i].jump)
+            {
+                path.Add(mousePath[i+1].position);
+                point = path.Last();
+                continue;
+            }
+
+            var differenceBetweenPoints = Vector2.Distance(mousePath[i].position, mousePath[i + 1].position);
+            Vector2 direction = mousePath[i + 1].position - mousePath[i].position;
             var newPoint = point + direction.normalized * (gap - difference);
-            var distance = Vector2.Distance(newPoint, mousePath[i]);
+            var distance = Vector2.Distance(newPoint, mousePath[i].position);
             
             while (distance != 0 && distance <= differenceBetweenPoints)
             {
                 difference = 0;
                 path.Add(newPoint);
-                //path.Insert(0,newPoint);
                 newPoint = path.Last() + direction.normalized * gap;
-                distance = Vector2.Distance(newPoint,mousePath[i]);
+                distance = Vector2.Distance(newPoint,mousePath[i].position);
                 point = path.Last();
             }
 
@@ -93,10 +104,10 @@ public class Path : MonoBehaviour
             {   
                 
                 if(i + 2 == mousePath.Count)
-                    path.Add(mousePath.Last());
+                    path.Add(mousePath.Last().position);
                 
-                difference += Vector2.Distance(mousePath[i + 1],point);
-                point = mousePath[i + 1];
+                difference += Vector2.Distance(mousePath[i + 1].position,point);
+                point = mousePath[i + 1].position;
             }
             
         }
@@ -104,7 +115,7 @@ public class Path : MonoBehaviour
     
     private void Movement()
     {
-        var pos = (Vector2)transform.position;
+        var snakeHeadPos = (Vector2)transform.position;
         var mousePos = (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition);
         
         if (Input.GetKeyDown(KeyCode.Space))
@@ -113,28 +124,31 @@ public class Path : MonoBehaviour
             _snakeBody.Add(body.transform);
         }
         
-        if (pos != mousePos)
+        if (snakeHeadPos != mousePos)
         {
-
-            if (pos.x < _boundryMinX - transform.localScale.x / 2 || _boundrymaxX + transform.localScale.x / 2 < pos.x)
+            snakeHeadPos = Vector2.MoveTowards(snakeHeadPos, mousePos, speed * Time.deltaTime);
+            bool jump = false;
+            if (snakeHeadPos.x < _boundryMinX - transform.localScale.x / 2 || _boundrymaxX + transform.localScale.x / 2 < snakeHeadPos.x)
             {
-                pos.x = pos.x * -1;
-                mousePath.Clear();
-                _snakeBody.Clear();
+                snakeHeadPos.x = snakeHeadPos.x * -1;
+                jump = true;
             }
 
 
-            if (pos.y < _boundryminY - transform.localScale.x / 2 || _boundrymaxY + transform.localScale.x / 2 < pos.y)
+            if (snakeHeadPos.y < _boundryminY - transform.localScale.x / 2 || _boundrymaxY + transform.localScale.x / 2 < snakeHeadPos.y)
             {
-                pos.y = pos.y * -1;
-                mousePath.Clear();
-                _snakeBody.Clear();
+                snakeHeadPos.y = snakeHeadPos.y * -1;
+                jump = true;
             }
-                
-            
-            transform.position = Vector2.MoveTowards(pos, mousePos, speed * Time.deltaTime);
-            mousePath.Insert(0, transform.position);
-            
+
+            mousePath.Insert(0, new Node()
+            {
+                jump = jump,
+                position = snakeHeadPos,
+            });
+            transform.position = snakeHeadPos;
+
+            //mousePath.Add(transform.position);
         }
         
     }

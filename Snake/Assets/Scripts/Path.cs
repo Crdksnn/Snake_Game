@@ -20,7 +20,8 @@ public class Path : MonoBehaviour
     [SerializeField] private float gap;
     
     [SerializeField] private float speed;
-
+    [SerializeField] private int maxSnakeBodyCount;
+    
     private List<Transform> _snakeBody = new List<Transform>();
     [SerializeField] private GameObject bodyPrefab;
     [SerializeField] private Transform bait;
@@ -69,7 +70,7 @@ public class Path : MonoBehaviour
     {
         for (int i = 0; i < mousePath.Count - 1; i++)
         {
-            Debug.DrawLine(mousePath[i].position, mousePath[i + 1].position, Color.blue, 100);
+            Debug.DrawLine(mousePath[i].position, mousePath[i + 1].position, Color.blue);
         }
         
         path.Clear();
@@ -77,7 +78,7 @@ public class Path : MonoBehaviour
         float difference = 0;
         Vector2 point = path.Last();
         
-        for (int i = 0; i < mousePath.Count - 1; i++)
+        for (int i = 0; path.Count < _snakeBody.Count + maxSnakeBodyCount && i < mousePath.Count - 1; i++)
         {
             if (mousePath[i].jump)
             {
@@ -140,15 +141,18 @@ public class Path : MonoBehaviour
                 snakeHeadPos.y = snakeHeadPos.y * -1;
                 jump = true;
             }
-
+            
+            transform.position = snakeHeadPos;
+            
             mousePath.Insert(0, new Node()
             {
                 jump = jump,
                 position = snakeHeadPos,
             });
-            transform.position = snakeHeadPos;
 
-            //mousePath.Add(transform.position);
+             if (  10 < mousePath.Count && path.Count * 5 < mousePath.Count)
+                 mousePath.Remove(mousePath.Last());
+
         }
         
     }

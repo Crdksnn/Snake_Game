@@ -73,45 +73,74 @@ public class Path : MonoBehaviour
             Debug.DrawLine(mousePath[i].position, mousePath[i + 1].position, Color.blue);
         }
         
+        // path.Clear();
+        // path.Add(mousePath[0].position);
+        // float difference = 0;
+        // Vector2 point = path.Last();
+        //
+        // for (int i = 0; i < mousePath.Count - 1; i++)
+        // {
+        //     if (mousePath[i].jump)
+        //     {
+        //         path.Add(mousePath[i+1].position);
+        //         point = path.Last();
+        //         continue;
+        //     }
+        //
+        //     var differenceBetweenPoints = Vector2.Distance(mousePath[i].position, mousePath[i + 1].position);
+        //     Vector2 direction = mousePath[i + 1].position - mousePath[i].position;
+        //     var newPoint = point + direction.normalized * (gap - difference);
+        //     var distance = Vector2.Distance(newPoint, mousePath[i].position);
+        //     
+        //     while (distance != 0 && distance <= differenceBetweenPoints)
+        //     {
+        //         difference = 0;
+        //         path.Add(newPoint);
+        //         newPoint = path.Last() + direction.normalized * gap;
+        //         distance = Vector2.Distance(newPoint,mousePath[i].position);
+        //         point = path.Last();
+        //     }
+        //
+        //     if (differenceBetweenPoints < distance)
+        //     {   
+        //         
+        //         if(i + 2 == mousePath.Count)
+        //             path.Add(mousePath.Last().position);
+        //         
+        //         difference += Vector2.Distance(mousePath[i + 1].position,point);
+        //         point = mousePath[i + 1].position;
+        //     }
+
         path.Clear();
+        int index = 0;
+        var difference = 0f;
         path.Add(mousePath[0].position);
-        float difference = 0;
-        Vector2 point = path.Last();
+        Vector2 referencePoint = path.First();
         
-        for (int i = 0; i < mousePath.Count - 1; i++)
+        while (index < mousePath.Count - 1)
         {
-            if (mousePath[i].jump)
+            Vector2 direction = mousePath[index + 1].position - mousePath[index].position;
+            var distance = Vector2.Distance(referencePoint, mousePath[index + 1].position);
+            var movement = gap - difference;
+            
+            if (distance != 0 && movement <= distance)
             {
-                path.Add(mousePath[i+1].position);
-                point = path.Last();
+                var newPoint = referencePoint + direction.normalized * movement;
+                path.Add(newPoint);
+                referencePoint = newPoint;
+                difference = 0;
                 continue;
             }
-
-            var differenceBetweenPoints = Vector2.Distance(mousePath[i].position, mousePath[i + 1].position);
-            Vector2 direction = mousePath[i + 1].position - mousePath[i].position;
-            var newPoint = point + direction.normalized * (gap - difference);
-            var distance = Vector2.Distance(newPoint, mousePath[i].position);
             
-            while (distance != 0 && distance <= differenceBetweenPoints)
-            {
-                difference = 0;
-                path.Add(newPoint);
-                newPoint = path.Last() + direction.normalized * gap;
-                distance = Vector2.Distance(newPoint,mousePath[i].position);
-                point = path.Last();
-            }
+            difference += distance;
 
-            if (differenceBetweenPoints < distance)
-            {   
+            // if(index + 2 == mousePath.Count && difference != 0)
+            //     path.Add(mousePath.Last().position);
                 
-                if(i + 2 == mousePath.Count)
-                    path.Add(mousePath.Last().position);
-                
-                difference += Vector2.Distance(mousePath[i + 1].position,point);
-                point = mousePath[i + 1].position;
-            }
-            
+            referencePoint = mousePath[index + 1].position;
+            index++;
         }
+        
     }
     
     private void Movement()

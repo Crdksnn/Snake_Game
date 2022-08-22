@@ -436,7 +436,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   path: []
   mousePath: []
-  gap: 0.1
+  gap: 1
   speed: 3
   maxSnakeBodyCount: 10
   bodyPrefab: {fileID: 1462695028216888638, guid: 558c0884d8a9ee643aa8760cea97076e, type: 3}

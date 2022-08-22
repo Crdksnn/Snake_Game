@@ -12,7 +12,7 @@ public struct Node
     public bool jump;
 }
 
-public class Path : MonoBehaviour
+public class Snake : MonoBehaviour
 {
     
     public List<Vector2> path = new List<Vector2>();
@@ -38,7 +38,7 @@ public class Path : MonoBehaviour
     private void Update()
     {
         Movement();
-        PathCreator();
+        SnakePath();
         SnakeBodyMovement();
         Feed();
     }
@@ -66,52 +66,83 @@ public class Path : MonoBehaviour
         bait.position = new Vector2(newX, newY);
     }
     
-    private void PathCreator()
+    private void SnakePath()
     {
         for (int i = 0; i < mousePath.Count - 1; i++)
         {
             Debug.DrawLine(mousePath[i].position, mousePath[i + 1].position, Color.blue);
         }
         
-        path.Clear();
-        path.Add(mousePath[0].position);
-        float difference = 0;
-        Vector2 point = path.Last();
-        
-        for (int i = 0; path.Count < _snakeBody.Count + maxSnakeBodyCount && i < mousePath.Count - 1; i++)
-        {
-            if (mousePath[i].jump)
-            {
-                path.Add(mousePath[i+1].position);
-                point = path.Last();
-                continue;
-            }
+        // path.Clear();
+        // path.Add(mousePath[0].position);
+        // float difference = 0;
+        // Vector2 point = path.Last();
+        //
+        // for (int i = 0; i < mousePath.Count - 1; i++)
+        // {
+        //     if (mousePath[i].jump)
+        //     {
+        //         path.Add(mousePath[i+1].position);
+        //         point = path.Last();
+        //         continue;
+        //     }
+        //
+        //     var differenceBetweenPoints = Vector2.Distance(mousePath[i].position, mousePath[i + 1].position);
+        //     Vector2 direction = mousePath[i + 1].position - mousePath[i].position;
+        //     var newPoint = point + direction.normalized * (gap - difference);
+        //     var distance = Vector2.Distance(newPoint, mousePath[i].position);
+        //     
+        //     while (distance != 0 && distance <= differenceBetweenPoints)
+        //     {
+        //         difference = 0;
+        //         path.Add(newPoint);
+        //         newPoint = path.Last() + direction.normalized * gap;
+        //         distance = Vector2.Distance(newPoint,mousePath[i].position);
+        //         point = path.Last();
+        //     }
+        //
+        //     if (differenceBetweenPoints < distance)
+        //     {   
+        //         
+        //         if(i + 2 == mousePath.Count)
+        //             path.Add(mousePath.Last().position);
+        //         
+        //         difference += Vector2.Distance(mousePath[i + 1].position,point);
+        //         point = mousePath[i + 1].position;
+        //     }
 
-            var differenceBetweenPoints = Vector2.Distance(mousePath[i].position, mousePath[i + 1].position);
-            Vector2 direction = mousePath[i + 1].position - mousePath[i].position;
-            var newPoint = point + direction.normalized * (gap - difference);
-            var distance = Vector2.Distance(newPoint, mousePath[i].position);
-            
-            while (distance != 0 && distance <= differenceBetweenPoints)
-            {
-                difference = 0;
-                path.Add(newPoint);
-                newPoint = path.Last() + direction.normalized * gap;
-                distance = Vector2.Distance(newPoint,mousePath[i].position);
-                point = path.Last();
-            }
+        // path.Clear();
+        // int index = 0;
+        // var difference = 0f;
+        // path.Add(mousePath[0].position);
+        // Vector2 referencePoint = path.First();
+        //
+        // while (index < mousePath.Count - 1)
+        // {
+        //     Vector2 direction = mousePath[index + 1].position - mousePath[index].position;
+        //     var distance = Vector2.Distance(referencePoint, mousePath[index + 1].position);
+        //     var movement = gap - difference;
+        //     
+        //     if (distance != 0 && movement <= distance)
+        //     {
+        //         var newPoint = referencePoint + direction.normalized * movement;
+        //         path.Add(newPoint);
+        //         referencePoint = newPoint;
+        //         difference = 0;
+        //         continue;
+        //     }
+        //     
+        //     difference += distance;
+        //
+        //     if(index + 2 == mousePath.Count && difference != 0)
+        //         path.Add(mousePath.Last().position);
+        //         
+        //     referencePoint = mousePath[index + 1].position;
+        //     index++;
+        //
 
-            if (differenceBetweenPoints < distance)
-            {   
-                
-                if(i + 2 == mousePath.Count)
-                    path.Add(mousePath.Last().position);
-                
-                difference += Vector2.Distance(mousePath[i + 1].position,point);
-                point = mousePath[i + 1].position;
-            }
-            
-        }
+        path = PathCreator.Path(gap, mousePath);
+
     }
     
     private void Movement()
@@ -149,10 +180,7 @@ public class Path : MonoBehaviour
                 jump = jump,
                 position = snakeHeadPos,
             });
-
-             if (  10 < mousePath.Count && path.Count * 5 < mousePath.Count)
-                 mousePath.Remove(mousePath.Last());
-
+            
         }
         
     }
